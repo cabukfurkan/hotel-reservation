@@ -39,7 +39,7 @@ public class AdminResource {
         }
         return customers;
     }
-    public void displayAllReservations(){
-        ReservationService.reservationService.printAllReservation();
-    }
+//    public void displayAllReservations(){
+//        ReservationService.reservationService.printAllReservation();
+//    }
 }

@@ -1,14 +1,14 @@
 package model;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 public class Reservation {
 
-    private Customer customer;
+    private final Customer customer;
     private Room room;
     private Date checkInDate;
     private Date checkOutDate;
+
 
     public Reservation(Customer customer, Room room, Date checkInDate, Date checkOutDate) {
         this.customer = customer;
@@ -19,10 +19,6 @@ public class Reservation {
 
     public Customer getCustomer() {
         return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
     public Room getRoom() {
@@ -47,6 +43,24 @@ public class Reservation {
 
     public void setCheckOutDate(Date checkOutDate) {
         this.checkOutDate = checkOutDate;
+    }
+
+    public boolean collidesWith (Date newCheckInDate, Date newCheckOutDate){
+            //check reservation.colliedesWith(reservation) if true continue
+            //check the same thing for the checkout date if it is bw the other resevations dates
+            if (newCheckInDate.equals(checkInDate)||newCheckInDate.equals(checkOutDate) ) {
+                return true;
+            }
+            if (newCheckInDate.after(checkInDate) && newCheckInDate.before(checkOutDate)){
+                return true;
+            }
+            if (newCheckOutDate.equals(checkOutDate)||newCheckOutDate.equals(checkInDate) ) {
+                return true;
+            }
+            if (newCheckOutDate.after(checkInDate) && newCheckOutDate.before(checkOutDate)){
+                return true;
+            }
+            return false;
     }
 
     @Override

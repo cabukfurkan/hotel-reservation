@@ -4,11 +4,11 @@ import java.util.Objects;
 
 public class Room implements IRoom {
 
-    private String roomNumber;
+    private final String roomNumber;
+    private final RoomType roomType;
     private Double roomPrice;
-    private RoomType roomType;
 
-    private Boolean isReserved = false;
+
 
     public Room(String roomNumber, Double roomPrice, RoomType enumeration) {
         this.roomNumber = roomNumber;
@@ -17,25 +17,11 @@ public class Room implements IRoom {
     }
 
 
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
 
     public void setRoomPrice(Double roomPrice) {
         this.roomPrice = roomPrice;
     }
 
-    public Boolean getIsReserved() {
-        return isReserved;
-    }
-
-    public void setIsReserved(Boolean isReserved) {
-        this.isReserved = isReserved;
-    }
-
-    public void setRoomType(RoomType enumeration) {
-        this.roomType = enumeration;
-    }
 
     @Override
     public String getRoomNumber() {
@@ -70,12 +56,15 @@ public class Room implements IRoom {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Room room)) return false;
-        return getRoomNumber().equals(room.getRoomNumber()) && getRoomPrice().equals(room.getRoomPrice()) && getRoomType() == room.getRoomType() && getIsReserved().equals(room.getIsReserved());
+        if (!(o instanceof Room room)) {
+            return false;
+        }
+
+        return getRoomNumber().equals(room.getRoomNumber()) && getRoomPrice().equals(room.getRoomPrice()) && getRoomType() == room.getRoomType();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getRoomNumber(), getRoomPrice(), getRoomType(), getIsReserved());
+        return Objects.hash(getRoomNumber(), getRoomPrice(), getRoomType());
     }
 }

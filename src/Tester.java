@@ -47,25 +47,10 @@ public class Tester {
 
                         Collection<Room> allRooms = new ArrayList<>();
                         allRooms = AdminResource.adminResource.getAllRooms();
-                        ArrayList<Room> availableRooms = new ArrayList<>();
 
-                        for (Room room : allRooms
-                        ) {
-                            if (!room.getIsReserved()) {
-                                availableRooms.add(room);
-                            }
-                        }
-                        if (availableRooms.isEmpty()) {
-                            System.out.println("There is no empty room");
-                        } else {
-                            for (Room room : availableRooms
-                            ) {
-                                System.out.println("room" + room.getRoomNumber()
-                                        + room.getRoomType() + " bed"
-                                        + room.getRoomPrice() * numberOfDays
-                                        + " for" + numberOfDays + " days");
-                            }
 
+
+//                            recommend a room from the list
                             System.out.println("Would you like to book this room y/n");
                             String choice = scanner.nextLine();
                             if (choice == "y") {
@@ -79,7 +64,6 @@ public class Tester {
                                     String roomNumber = scanner.nextLine();
 
                                     ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber),checkInDate,checkOutDate );
-                                    ReservationService.reservationService.getARoom(roomNumber).setIsReserved(true);
                                 }
                             } else {
                                 System.out.println("1-" + mainMenu.getOption1());
