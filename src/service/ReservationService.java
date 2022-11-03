@@ -54,24 +54,8 @@ public class ReservationService {
             return reservation;
         }
 
-        int collision = 0;
-
         for (Reservation reservation1 : reservationList) {
-            if (reservation1.getCheckInDate().equals(checkInDate)||reservation1.getCheckInDate().equals(checkOutDate) ) {
-                collision++;
-            }
-            if (reservation1.getCheckInDate().after(checkInDate) && reservation1.getCheckInDate().before(checkOutDate)){
-                collision++;
-            }
-            if (reservation1.getCheckOutDate().equals(checkOutDate)||reservation1.getCheckOutDate().equals(checkInDate) ) {
-                collision++;
-            }
-            if (reservation1.getCheckOutDate().after(checkInDate) && reservation1.getCheckOutDate().before(checkOutDate)){
-                collision++;
-            }
-        }
-
-            if (collision>=0) {
+            if (reservation.collidesWith(reservation1.getCheckInDate(), reservation1.getCheckOutDate())) {
                 System.out.println("This reservation is not possible");
                 System.out.println("Available rooms for you as follows: ");
                 Collection<Room> availableRooms = findAvailableRooms(checkInDate, checkOutDate);
@@ -81,8 +65,9 @@ public class ReservationService {
                     System.out.println(counter + ": " + availableRoom.getRoomNumber());
                     counter++;
                 }
-                counter = 0;
+                break;
             }
+        }
         // add reservation into reservation list
         reservationList.add(reservation);
         //add new reservation list into reservationS list
@@ -95,32 +80,19 @@ public class ReservationService {
 
         for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
             // each entry (reservation list per room)
-//            values(reservations) into the list
+            // values(reservations) into the list
             List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
             // for each entry (reservation list per room) checkin dates is not within the range of an existing reservation
             int collision = 0;
             for (Reservation reservation : reservationsPerRoom
             ) {
-//                if (reservation.collidesWith(checkInDate, checkOutDate)) {
-//                    collision++;
-//                }
-                if (reservation.getCheckInDate().equals(checkInDate)||reservation.getCheckInDate().equals(checkOutDate) ) {
-                    collision++;
-                }
-                if (reservation.getCheckInDate().after(checkInDate) && reservation.getCheckInDate().before(checkOutDate)){
-                    collision++;
-                }
-                if (reservation.getCheckOutDate().equals(checkOutDate)||reservation.getCheckOutDate().equals(checkInDate) ) {
-                    collision++;
-                }
-                if (reservation.getCheckOutDate().after(checkInDate) && reservation.getCheckOutDate().before(checkOutDate)){
+                if (reservation.collidesWith(checkInDate, checkOutDate)) {
                     collision++;
                 }
             }
             if (collision == 0) {
                 availableRoomList.add(getARoom(roomReservationsEntry.getKey()));
             }
-
         }
         return availableRoomList;
     }
@@ -131,7 +103,7 @@ public class ReservationService {
             List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
             for (Reservation reservation : reservationsPerRoom
             ) {
-                if (customerEmail.equals(reservation.getCustomer())) {
+                if (customerEmail.equals(reservation.getCustomer().getEmail())) {
                     reservationsForCustomer.add(reservation);
                 }
             }

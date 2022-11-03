@@ -45,23 +45,23 @@ public class Reservation {
         this.checkOutDate = checkOutDate;
     }
 
-//    public boolean collidesWith (Date newCheckInDate, Date newCheckOutDate){
-//            //check reservation.colliedesWith(reservation) if true continue
-//            //check the same thing for the checkout date if it is bw the other resevations dates
-//            if (newCheckInDate.equals(this.checkInDate)||newCheckInDate.equals(this.checkOutDate) ) {
-//                return true;
-//            }
-//            if (newCheckInDate.after(this.checkInDate) && newCheckInDate.before(this.checkOutDate)){
-//                return true;
-//            }
-//            if (newCheckOutDate.equals(this.checkOutDate)||newCheckOutDate.equals(this.checkInDate) ) {
-//                return true;
-//            }
-//            if (newCheckOutDate.after(this.checkInDate) && newCheckOutDate.before(this.checkOutDate)){
-//                return true;
-//            }
-//            return false;
-//    }
+    public boolean collidesWith (Date newCheckInDate, Date newCheckOutDate){
+            //check reservation.colliedesWith(reservation) if true continue
+            //check the same thing for the checkout date if it is bw the other resevations dates
+            if (newCheckInDate.equals(this.checkInDate)||newCheckInDate.equals(this.checkOutDate) ) {
+                return true;
+            }
+            if (newCheckInDate.after(this.checkInDate) && newCheckInDate.before(this.checkOutDate)){
+                return true;
+            }
+            if (newCheckOutDate.equals(this.checkOutDate)||newCheckOutDate.equals(this.checkInDate) ) {
+                return true;
+            }
+            if (newCheckOutDate.after(this.checkInDate) && newCheckOutDate.before(this.checkOutDate)){
+                return true;
+            }
+            return false;
+    }
 
     @Override
     public String toString() {
