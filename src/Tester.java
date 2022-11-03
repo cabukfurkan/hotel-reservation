@@ -1,28 +1,21 @@
-import api.AdminMenu;
 import api.AdminResource;
-import api.MainMenu;
-import model.IRoom;
 import model.Room;
 import model.RoomType;
 import service.CustomerService;
 import service.ReservationService;
 
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Tester {
 
     public static void main(String[] args) {
-//        MainMenu mainMenu = new MainMenu();
-//        AdminMenu adminMenu = new AdminMenu();
-
-        ReservationService reservationService = ReservationService.getInstance();
-
-        CustomerService customerService = CustomerService.getInstance();
-
-        AdminResource adminResource = AdminResource.getInstance();
+//        ReservationService reservationService = ReservationService.getInstance();
+//
+//        CustomerService customerService = CustomerService.getInstance();
+//
+//        AdminResource adminResource = AdminResource.getInstance();
 
         boolean keepRunning = true;
         try (Scanner scanner = new Scanner(System.in)) {
@@ -40,19 +33,18 @@ public class Tester {
 
                     if (selection == 1) {
                         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-//                        check in date
                         System.out.println("Enter check in date dd-MM-yyyy example 02-01-2022");
                         String checkInDateString = scanner.nextLine();
                         Date checkInDate = formatter.parse(checkInDateString);
-//                        checkout date
+
                         System.out.println("Enter check out date dd-MM-yyyy example 03-01-2022");
                         String checkOutDateString = scanner.nextLine();
                         Date checkOutDate = formatter.parse(checkOutDateString);
-//                        difference bw two date
+
                         long timeDifference = checkOutDate.getTime() - checkInDate.getTime();
                         long numberOfDays = TimeUnit.MILLISECONDS.toDays(timeDifference);
 
-                        List<Room> availableRooms = reservationService.findAvailableRooms(checkInDate, checkOutDate);
+                        List<Room> availableRooms = ReservationService.reservationService.findAvailableRooms(checkInDate, checkOutDate);
 
                         if (availableRooms == null || availableRooms.isEmpty()) {
                             System.out.println("There is no available room");
@@ -67,17 +59,17 @@ public class Tester {
 
                             System.out.println("Would you like to book one of these room y/n");
                             String choice = scanner.nextLine();
-                            if (choice == "y") {
+                            if (choice.equals("y")) {
                                 System.out.println("Do you have account with us y/n");
                                 choice = scanner.nextLine();
-                                if (choice == "y") {
+                                if (choice.equals("y")) {
                                     System.out.println("enter email format name@domain.com");
                                     String email = scanner.nextLine();
 
                                     System.out.println("what room would you like to reserve");
                                     String roomNumber = scanner.nextLine();
 
-                                    reservationService.reserveARoom(customerService.getCustomer(email), reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+                                    ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
                                 }
                             } else {
                                 System.out.println("1- Find and reserve a room");
@@ -100,7 +92,7 @@ public class Tester {
                         String lastName = scanner.nextLine();
                         System.out.println("email: ");
                         String email = scanner.nextLine();
-                        customerService.addCustomer(email, firstName, lastName);
+                        CustomerService.customerService.addCustomer(email, firstName, lastName);
 
                     } else if (selection == 4) {
                         System.out.println("1-See all Customers");
@@ -113,10 +105,10 @@ public class Tester {
                         selection = Integer.parseInt(scanner.nextLine());
 
                         if (selection == 1) {
-                            adminResource.getAllCustomers();
+                            AdminResource.adminResource.getAllCustomers();
                         }
                         if (selection == 2) {
-                            List<Room> allRooms = (List<Room>) adminResource.getAllRooms();
+                            List<Room> allRooms = (List<Room>) AdminResource.adminResource.getAllRooms();
 
                             for (Room room : allRooms
                             ) {
@@ -126,7 +118,7 @@ public class Tester {
                             }
                         }
                         if (selection == 3) {
-                            adminResource.displayAllReservations();
+                            AdminResource.adminResource.displayAllReservations();
                         }
                         if (selection == 4) {
                             System.out.println("room number: ");
@@ -142,7 +134,7 @@ public class Tester {
                                 roomType = RoomType.DOUBLE;
                             }
                             Room newRoom = new Room(roomNumber, price, roomType);
-                            adminResource.addRoom(newRoom);
+                            AdminResource.adminResource.addRoom(newRoom);
                         }
                     } else if (selection == 5) {
                         keepRunning = false;

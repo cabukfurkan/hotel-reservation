@@ -1,5 +1,6 @@
 package service;
 
+import api.AdminResource;
 import model.Customer;
 import model.IRoom;
 import model.Reservation;
@@ -8,19 +9,7 @@ import model.Room;
 import java.util.*;
 
 public class ReservationService {
-    private static ReservationService reservationService = null;
-
-
-
-    private ReservationService(){}
-
-    public static ReservationService getInstance(){
-        if(reservationService== null){
-            reservationService = new ReservationService();
-        }
-
-        return reservationService;
-    }
+    public static ReservationService reservationService = new ReservationService();
     Collection<Room> rooms = new ArrayList<>();
     Map<String, List<Reservation>> roomReservations = new HashMap<>();
 
@@ -77,21 +66,34 @@ public class ReservationService {
 
     public List<Room> findAvailableRooms(Date checkInDate, Date checkOutDate) {
         List<Room> availableRoomList = new ArrayList<>();
+        List<Room> allRooms = (List<Room>) AdminResource.adminResource.getAllRooms();
 
-        for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
-            // each entry (reservation list per room)
-            // values(reservations) into the list
-            List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
-            // for each entry (reservation list per room) checkin dates is not within the range of an existing reservation
-            int collision = 0;
-            for (Reservation reservation : reservationsPerRoom
-            ) {
-                if (reservation.collidesWith(checkInDate, checkOutDate)) {
-                    collision++;
+        for (Room room : allRooms
+        ) {
+            boolean isRoomEverReserved= false;
+            for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
+                // each entry (reservation list per room)
+                // values(reservations) into the list
+                List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
+                // for each entry (reservation list per room) checkin dates is not within the range of an existing reservation
+
+                if (roomReservationsEntry.getKey() == room.getRoomNumber()) {
+                    isRoomEverReserved= true;
+                    int collision = 0;
+                    for (Reservation reservation : reservationsPerRoom
+                    ) {
+                        if (reservation.collidesWith(checkInDate, checkOutDate)) {
+                            collision++;
+                        }
+                    }
+                    if (collision == 0) {
+                        availableRoomList.add(room);
+                    }
                 }
+
             }
-            if (collision == 0) {
-                availableRoomList.add(getARoom(roomReservationsEntry.getKey()));
+            if (!isRoomEverReserved){
+                availableRoomList.add(room);
             }
         }
         return availableRoomList;

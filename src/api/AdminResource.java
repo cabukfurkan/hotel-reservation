@@ -10,36 +10,24 @@ import java.util.*;
 
 public class AdminResource {
 
-    private static AdminResource adminResource = null;
-
-    private  AdminResource(){}
-
-    public static AdminResource getInstance(){
-        if(adminResource== null){
-            adminResource = new AdminResource();
-        }
-        return adminResource;
-    }
-
-    ReservationService reservationService = ReservationService.getInstance();
-    CustomerService customerService = CustomerService.getInstance();
+    public static AdminResource adminResource = new AdminResource();
 
     public Customer getCustomer(String email){
-        return customerService.getCustomer(email);
+        return CustomerService.customerService.getCustomer(email);
     }
 
     public void addRoom(Room room){
-        reservationService.addRoom(room);
+        ReservationService.reservationService.addRoom(room);
     }
     public Collection<Room> getAllRooms(){
 
         Collection<Room> rooms = new ArrayList<>();
-        rooms = reservationService.getAllRooms();
+        rooms = ReservationService.reservationService.getAllRooms();
         return rooms ;
     }
     public Collection<Customer> getAllCustomers(){
         Collection<Customer> customers = new ArrayList<>();
-        customers = customerService.getAllCustomers();
+        customers = CustomerService.customerService.getAllCustomers();
 
         for (Customer customer:customers
              ) {
@@ -48,6 +36,6 @@ public class AdminResource {
         return customers;
     }
     public void displayAllReservations(){
-        reservationService.printAllReservation();
+        ReservationService.reservationService.printAllReservation();
     }
 }
