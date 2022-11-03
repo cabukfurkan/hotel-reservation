@@ -8,7 +8,17 @@ import java.util.Map;
 
 public class CustomerService {
 
-    public static final CustomerService customerService = new CustomerService();
+    private static CustomerService customerService = null;
+
+    private CustomerService(){}
+
+    public static CustomerService getInstance(){
+        if(customerService== null){
+            customerService = new CustomerService();
+        }
+
+        return customerService;
+    }
 
     Map<String, Customer> customerMap = new HashMap<>();
     public void addCustomer(String email, String firstName, String lastName){

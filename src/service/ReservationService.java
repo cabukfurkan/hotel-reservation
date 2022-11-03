@@ -8,8 +8,19 @@ import model.Room;
 import java.util.*;
 
 public class ReservationService {
-    public static final ReservationService reservationService = new ReservationService();
+    private static ReservationService reservationService = null;
 
+
+
+    private ReservationService(){}
+
+    public static ReservationService getInstance(){
+        if(reservationService== null){
+            reservationService = new ReservationService();
+        }
+
+        return reservationService;
+    }
     Collection<Room> rooms = new ArrayList<>();
     Map<String, List<Reservation>> roomReservations = new HashMap<>();
 
@@ -28,10 +39,6 @@ public class ReservationService {
     }
 
     public Collection<Room> getAllRooms() {
-        for (Room room : rooms
-        ) {
-            System.out.println("room = " + room);
-        }
         return rooms;
     }
 
@@ -47,29 +54,43 @@ public class ReservationService {
             return reservation;
         }
 
+        int collision = 0;
+
         for (Reservation reservation1 : reservationList) {
-            if (reservation.collidesWith(reservation1.getCheckInDate(), reservation1.getCheckOutDate())) {
-                System.out.println("This reservation is not possible");
-                System.out.println("Available rooms for you as follows: ");
-                Collection<Room> availableRooms = findAvailableRooms(checkInDate,checkOutDate);
-                int counter=1;
-                for (Room availableRoom: availableRooms
-                     ) {
-                    System.out.println(counter+": " + availableRoom.getRoomNumber());
-                    counter++;
-                }
-                counter=0;
-                break;
+            if (reservation1.getCheckInDate().equals(checkInDate)||reservation1.getCheckInDate().equals(checkOutDate) ) {
+                collision++;
+            }
+            if (reservation1.getCheckInDate().after(checkInDate) && reservation1.getCheckInDate().before(checkOutDate)){
+                collision++;
+            }
+            if (reservation1.getCheckOutDate().equals(checkOutDate)||reservation1.getCheckOutDate().equals(checkInDate) ) {
+                collision++;
+            }
+            if (reservation1.getCheckOutDate().after(checkInDate) && reservation1.getCheckOutDate().before(checkOutDate)){
+                collision++;
             }
         }
+
+            if (collision>=0) {
+                System.out.println("This reservation is not possible");
+                System.out.println("Available rooms for you as follows: ");
+                Collection<Room> availableRooms = findAvailableRooms(checkInDate, checkOutDate);
+                int counter = 1;
+                for (Room availableRoom : availableRooms
+                ) {
+                    System.out.println(counter + ": " + availableRoom.getRoomNumber());
+                    counter++;
+                }
+                counter = 0;
+            }
         // add reservation into reservation list
         reservationList.add(reservation);
         //add new reservation list into reservationS list
-        roomReservations.put(room.getRoomNumber(),reservationList);
+        roomReservations.put(room.getRoomNumber(), reservationList);
         return reservation;
     }
 
-    public Collection<Room> findAvailableRooms(Date checkInDate, Date checkOutDate) {
+    public List<Room> findAvailableRooms(Date checkInDate, Date checkOutDate) {
         List<Room> availableRoomList = new ArrayList<>();
 
         for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
@@ -80,32 +101,56 @@ public class ReservationService {
             int collision = 0;
             for (Reservation reservation : reservationsPerRoom
             ) {
-                if(reservation.collidesWith(checkInDate,checkOutDate)){
+//                if (reservation.collidesWith(checkInDate, checkOutDate)) {
+//                    collision++;
+//                }
+                if (reservation.getCheckInDate().equals(checkInDate)||reservation.getCheckInDate().equals(checkOutDate) ) {
+                    collision++;
+                }
+                if (reservation.getCheckInDate().after(checkInDate) && reservation.getCheckInDate().before(checkOutDate)){
+                    collision++;
+                }
+                if (reservation.getCheckOutDate().equals(checkOutDate)||reservation.getCheckOutDate().equals(checkInDate) ) {
+                    collision++;
+                }
+                if (reservation.getCheckOutDate().after(checkInDate) && reservation.getCheckOutDate().before(checkOutDate)){
                     collision++;
                 }
             }
-            if (collision==0){
+            if (collision == 0) {
                 availableRoomList.add(getARoom(roomReservationsEntry.getKey()));
             }
+
         }
         return availableRoomList;
     }
 
-//    public Collection<Reservation> getCustomersReservation(String customerEmail) {
-//        Reservation foundReservation = null;
-//        for (Reservation reservation:reservations
-//             ) {
-//            if (reservation.getCustomer().getEmail().equals(customerEmail)){
-//                return (Collection<Reservation>) foundReservation;
-//            }
-//        }
-//        return null;
-//    }
+    public Collection<Reservation> getCustomersReservation(String customerEmail) {
+        List<Reservation> reservationsForCustomer = new ArrayList<>();
+        for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
+            List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
+            for (Reservation reservation : reservationsPerRoom
+            ) {
+                if (customerEmail.equals(reservation.getCustomer())) {
+                    reservationsForCustomer.add(reservation);
+                }
+            }
+        }
+        return reservationsForCustomer;
+    }
 
-//    public void printAllReservation() {
-//
-//        for (Reservation reservation: reservations) {
-//            System.out.println(reservation);
-//        }
-//    }
+    public void printAllReservation() {
+        for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
+            List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
+            for (Reservation reservation : reservationsPerRoom
+            ) {
+                System.out.println("Customer email: " + reservation.getCustomer().getEmail()
+                        + "Customer name: " + reservation.getCustomer().getFirstName()
+                        + "Customer last name: " + reservation.getCustomer().getLastName()
+                        + "room number: " + reservation.getRoom()
+                        + "Check in date: " + reservation.getCheckInDate()
+                        + "Check out date: " + reservation.getCheckOutDate());
+            }
+        }
+    }
 }

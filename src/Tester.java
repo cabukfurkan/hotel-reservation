@@ -15,18 +15,25 @@ import java.util.concurrent.TimeUnit;
 public class Tester {
 
     public static void main(String[] args) {
-        MainMenu mainMenu = new MainMenu();
-        AdminMenu adminMenu = new AdminMenu();
+//        MainMenu mainMenu = new MainMenu();
+//        AdminMenu adminMenu = new AdminMenu();
+
+        ReservationService reservationService = ReservationService.getInstance();
+
+        CustomerService customerService = CustomerService.getInstance();
+
+        AdminResource adminResource = AdminResource.getInstance();
+
         boolean keepRunning = true;
         try (Scanner scanner = new Scanner(System.in)) {
 
             while (keepRunning) {
                 try {
-                    System.out.println("1-" + mainMenu.getOption1());
-                    System.out.println("2-" + mainMenu.getOption2());
-                    System.out.println("3-" + mainMenu.getOption3());
-                    System.out.println("4-" + mainMenu.getOption4());
-                    System.out.println("5-" + mainMenu.getOption5());
+                    System.out.println("1- Find and reserve a room");
+                    System.out.println("2- See my reservations");
+                    System.out.println("3- Create an account");
+                    System.out.println("4- Admin");
+                    System.out.println("5- exit");
                     System.out.println("=====================================");
                     System.out.println("please select a NUMBER from the menu");
                     int selection = Integer.parseInt(scanner.nextLine());
@@ -45,13 +52,20 @@ public class Tester {
                         long timeDifference = checkOutDate.getTime() - checkInDate.getTime();
                         long numberOfDays = TimeUnit.MILLISECONDS.toDays(timeDifference);
 
-                        Collection<Room> allRooms = new ArrayList<>();
-                        allRooms = AdminResource.adminResource.getAllRooms();
+                        List<Room> availableRooms = reservationService.findAvailableRooms(checkInDate, checkOutDate);
 
+                        if (availableRooms == null || availableRooms.isEmpty()) {
+                            System.out.println("There is no available room");
+                        } else {
+                            for (Room room : availableRooms
+                            ) {
+                                System.out.println("room" + room.getRoomNumber() + " "
+                                        + room.getRoomType() + " bed" + " "
+                                        + room.getRoomPrice() * numberOfDays + " "
+                                        + " for" + numberOfDays + " days");
+                            }
 
-
-//                            recommend a room from the list
-                            System.out.println("Would you like to book this room y/n");
+                            System.out.println("Would you like to book one of these room y/n");
                             String choice = scanner.nextLine();
                             if (choice == "y") {
                                 System.out.println("Do you have account with us y/n");
@@ -63,14 +77,14 @@ public class Tester {
                                     System.out.println("what room would you like to reserve");
                                     String roomNumber = scanner.nextLine();
 
-                                    ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber),checkInDate,checkOutDate );
+                                    reservationService.reserveARoom(customerService.getCustomer(email), reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
                                 }
                             } else {
-                                System.out.println("1-" + mainMenu.getOption1());
-                                System.out.println("2-" + mainMenu.getOption2());
-                                System.out.println("3-" + mainMenu.getOption3());
-                                System.out.println("4-" + mainMenu.getOption4());
-                                System.out.println("5-" + mainMenu.getOption5());
+                                System.out.println("1- Find and reserve a room");
+                                System.out.println("2- See my reservations");
+                                System.out.println("3- Create an account");
+                                System.out.println("4- Admin");
+                                System.out.println("5- Exit");
                                 System.out.println("=====================================");
                                 System.out.println("please select a NUMBER from the menu");
                                 selection = Integer.parseInt(scanner.nextLine());
@@ -86,26 +100,33 @@ public class Tester {
                         String lastName = scanner.nextLine();
                         System.out.println("email: ");
                         String email = scanner.nextLine();
-                        CustomerService.customerService.addCustomer(email, firstName, lastName);
+                        customerService.addCustomer(email, firstName, lastName);
 
                     } else if (selection == 4) {
-                        System.out.println("1-" + adminMenu.getOption1());
-                        System.out.println("2-" + adminMenu.getOption2());
-                        System.out.println("3-" + adminMenu.getOption3());
-                        System.out.println("4-" + adminMenu.getOption4());
-                        System.out.println("5-" + adminMenu.getOption5());
+                        System.out.println("1-See all Customers");
+                        System.out.println("2-See all Rooms");
+                        System.out.println("3-See all Reservations");
+                        System.out.println("4-Add a Room");
+                        System.out.println("5-Back to Main Menu");
                         System.out.println("=====================================");
                         System.out.println("please select a NUMBER from the menu");
                         selection = Integer.parseInt(scanner.nextLine());
 
                         if (selection == 1) {
-                            AdminResource.adminResource.getAllCustomers();
+                            adminResource.getAllCustomers();
                         }
                         if (selection == 2) {
-                            AdminResource.adminResource.getAllRooms();
+                            List<Room> allRooms = (List<Room>) adminResource.getAllRooms();
+
+                            for (Room room : allRooms
+                            ) {
+                                System.out.println("room number: " + room.getRoomNumber() + " " +
+                                        "room type: " + room.getRoomType() + " " +
+                                        "room price: " + room.getRoomPrice());
+                            }
                         }
                         if (selection == 3) {
-                            AdminResource.adminResource.displayAllReservations();
+                            adminResource.displayAllReservations();
                         }
                         if (selection == 4) {
                             System.out.println("room number: ");
@@ -121,7 +142,7 @@ public class Tester {
                                 roomType = RoomType.DOUBLE;
                             }
                             Room newRoom = new Room(roomNumber, price, roomType);
-                            AdminResource.adminResource.addRoom(newRoom);
+                            adminResource.addRoom(newRoom);
                         }
                     } else if (selection == 5) {
                         keepRunning = false;
