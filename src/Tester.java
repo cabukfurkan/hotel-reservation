@@ -1,4 +1,5 @@
 import api.AdminResource;
+import model.Reservation;
 import model.Room;
 import model.RoomType;
 import service.CustomerService;
@@ -11,11 +12,6 @@ import java.util.concurrent.TimeUnit;
 public class Tester {
 
     public static void main(String[] args) {
-//        ReservationService reservationService = ReservationService.getInstance();
-//
-//        CustomerService customerService = CustomerService.getInstance();
-//
-//        AdminResource adminResource = AdminResource.getInstance();
 
         boolean keepRunning = true;
         try (Scanner scanner = new Scanner(System.in)) {
@@ -47,14 +43,14 @@ public class Tester {
                         List<Room> availableRooms = ReservationService.reservationService.findAvailableRooms(checkInDate, checkOutDate);
 
                         if (availableRooms == null || availableRooms.isEmpty()) {
-                            System.out.println("There is no available room");
+                            System.out.println("There is no available room try when admin adds a room");
                         } else {
                             for (Room room : availableRooms
                             ) {
-                                System.out.println("room" + room.getRoomNumber() + " "
+                                System.out.println("room: " + room.getRoomNumber() + " "
                                         + room.getRoomType() + " bed" + " "
                                         + room.getRoomPrice() * numberOfDays + " "
-                                        + " for" + numberOfDays + " days");
+                                        + " for " + numberOfDays + " days");
                             }
 
                             System.out.println("Would you like to book one of these room y/n");
@@ -70,6 +66,19 @@ public class Tester {
                                     String roomNumber = scanner.nextLine();
 
                                     ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+                                } else {
+//                                make an account
+                                    System.out.println("name: ");
+                                    String firstName = scanner.nextLine();
+                                    System.out.println("lastname: ");
+                                    String lastName = scanner.nextLine();
+                                    System.out.println("email: ");
+                                    String email = scanner.nextLine();
+                                    CustomerService.customerService.addCustomer(email, firstName, lastName);
+
+                                    System.out.println("enter the room number you would you like to reserve");
+                                    String roomNumber = scanner.nextLine();
+                                    ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
                                 }
                             } else {
                                 System.out.println("1- Find and reserve a room");
@@ -84,7 +93,19 @@ public class Tester {
                         }
 
                     } else if (selection == 2) {
+                        System.out.println("what is your email: ");
+                        String email = scanner.nextLine();
 
+                        List<Reservation> customerReservations = (List<Reservation>) ReservationService.reservationService.getCustomersReservation(email);
+
+                        if (customerReservations == null || customerReservations.isEmpty()){
+                            System.out.println("You haven't got any reservations please make a reservation from the menu");
+                            System.out.println("---------------------------");
+                        }
+                        for (Reservation reservation : customerReservations
+                        ) {
+                            System.out.println("Room number: " + reservation.getRoom().getRoomNumber() + " from " + reservation.getCheckInDate() + " to " + reservation.getCheckOutDate());
+                        }
                     } else if (selection == 3) {
                         System.out.println("name: ");
                         String firstName = scanner.nextLine();
