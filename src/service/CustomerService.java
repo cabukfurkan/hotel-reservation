@@ -19,6 +19,8 @@ public class CustomerService {
     public Customer getCustomer(String customerEmail){
         return customerMap.get(customerEmail);
     }
+
+
     public Collection<Customer> getAllCustomers(){
         return customerMap.values();
     }

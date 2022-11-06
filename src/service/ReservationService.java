@@ -5,16 +5,33 @@ import model.Customer;
 import model.IRoom;
 import model.Reservation;
 import model.Room;
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.*;
 
 public class ReservationService {
     public static ReservationService reservationService = new ReservationService();
     Collection<Room> rooms = new ArrayList<>();
+
     Map<String, List<Reservation>> roomReservations = new HashMap<>();
 
     public void addRoom(Room room) {
-        rooms.add(room);
+
+        int count = 0;
+
+        for (Room existedRoom : rooms
+        ) {
+            if (existedRoom.getRoomNumber().equals(room.getRoomNumber())) {
+                count++;
+                System.out.println("This room already exists.");
+                System.out.println("==========================");
+                break;
+            }
+        }
+        if (count == 0) {
+            rooms.add(room);
+            System.out.println("Room " + room.getRoomNumber() + " has been added successfully.");
+        }
     }
 
     public Room getARoom(String roomId) {
@@ -40,12 +57,16 @@ public class ReservationService {
             List<Reservation> newReservationList = new ArrayList<>();
             newReservationList.add(reservation);
             roomReservations.put(room.getRoomNumber(), newReservationList);
+            System.out.println("You have booked room " + room.getRoomNumber() + " successfully");
             return reservation;
         }
 
+        int collision = 0;
         for (Reservation reservation1 : reservationList) {
             if (reservation.collidesWith(reservation1.getCheckInDate(), reservation1.getCheckOutDate())) {
+                collision++;
                 System.out.println("This reservation is not possible");
+
                 System.out.println("Available rooms for you as follows: ");
                 Collection<Room> availableRooms = findAvailableRooms(checkInDate, checkOutDate);
                 int counter = 1;
@@ -57,10 +78,18 @@ public class ReservationService {
                 break;
             }
         }
-        // add reservation into reservation list
-        reservationList.add(reservation);
-        //add new reservation list into reservationS list
-        roomReservations.put(room.getRoomNumber(), reservationList);
+
+        if (collision == 0) {
+            // add reservation into reservation list
+            reservationList.add(reservation);
+            System.out.println("You have booked room " + room.getRoomNumber() + " successfully");
+            //add new reservation list into reservationS list
+            roomReservations.put(room.getRoomNumber(), reservationList);
+        } else {
+            System.out.println(
+                    "Please select only from available room list."
+            );
+        }
         return reservation;
     }
 
@@ -70,7 +99,7 @@ public class ReservationService {
 
         for (Room room : allRooms
         ) {
-            boolean isRoomEverReserved= false;
+            boolean isRoomEverReserved = false;
             for (Map.Entry<String, List<Reservation>> roomReservationsEntry : roomReservations.entrySet()) {
                 // each entry (reservation list per room)
                 // values(reservations) into the list
@@ -78,7 +107,7 @@ public class ReservationService {
                 // for each entry (reservation list per room) checkin dates is not within the range of an existing reservation
 
                 if (roomReservationsEntry.getKey() == room.getRoomNumber()) {
-                    isRoomEverReserved= true;
+                    isRoomEverReserved = true;
                     int collision = 0;
                     for (Reservation reservation : reservationsPerRoom
                     ) {
@@ -92,7 +121,7 @@ public class ReservationService {
                 }
 
             }
-            if (!isRoomEverReserved){
+            if (!isRoomEverReserved) {
                 availableRoomList.add(room);
             }
         }

@@ -61,11 +61,37 @@ public class Tester {
                                 if (choice.equals("y")) {
                                     System.out.println("enter email format name@domain.com");
                                     String email = scanner.nextLine();
+                                    if (CustomerService.customerService.getCustomer(email) == null) {
+                                        System.out.println("You don't have account with this email address");
 
-                                    System.out.println("what room would you like to reserve");
-                                    String roomNumber = scanner.nextLine();
+                                        System.out.println("Do you want to make an account y/n?");
+                                        choice = scanner.nextLine();
 
-                                    ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+                                        if (choice.equals("y")) {
+                                            System.out.println("name: ");
+                                            String firstName = scanner.nextLine();
+                                            System.out.println("lastname: ");
+                                            String lastName = scanner.nextLine();
+                                            System.out.println("email: ");
+                                            email = scanner.nextLine();
+                                            CustomerService.customerService.addCustomer(email, firstName, lastName);
+
+                                            System.out.println("enter the room number you would you like to reserve");
+                                            String roomNumber = scanner.nextLine();
+                                            ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+
+                                        }else {
+                                            System.out.println("returning to main menu..");
+                                            System.out.println("===========================");
+                                        }
+
+                                    } else {
+                                        System.out.println("what room would you like to reserve");
+                                        String roomNumber = scanner.nextLine();
+
+                                        ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+                                    }
+
                                 } else {
 //                                make an account
                                     System.out.println("name: ");
@@ -98,7 +124,7 @@ public class Tester {
 
                         List<Reservation> customerReservations = (List<Reservation>) ReservationService.reservationService.getCustomersReservation(email);
 
-                        if (customerReservations == null || customerReservations.isEmpty()){
+                        if (customerReservations == null || customerReservations.isEmpty()) {
                             System.out.println("You haven't got any reservations please make a reservation from the menu");
                             System.out.println("---------------------------");
                         }
