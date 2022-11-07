@@ -1,4 +1,6 @@
+import api.AdminMenu;
 import api.AdminResource;
+import api.MainMenu;
 import model.Reservation;
 import model.Room;
 import model.RoomType;
@@ -9,22 +11,22 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class Tester {
+public class HotelReservation {
 
     public static void main(String[] args) {
+
+        Room room1 = new Room("1", 40.0, RoomType.SINGLE);
+        Room room2 = new Room("2", 100.0, RoomType.DOUBLE);
+        ReservationService.reservationService.addRoom(room1);
+        ReservationService.reservationService.addRoom(room2);
+        System.out.println("==============================");
 
         boolean keepRunning = true;
         try (Scanner scanner = new Scanner(System.in)) {
 
             while (keepRunning) {
                 try {
-                    System.out.println("1- Find and reserve a room");
-                    System.out.println("2- See my reservations");
-                    System.out.println("3- Create an account");
-                    System.out.println("4- Admin");
-                    System.out.println("5- exit");
-                    System.out.println("=====================================");
-                    System.out.println("please select a NUMBER from the menu");
+                    MainMenu.mainMenu.showMenu();
                     int selection = Integer.parseInt(scanner.nextLine());
 
                     if (selection == 1) {
@@ -32,20 +34,20 @@ public class Tester {
 
                         String today = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
-                        System.out.println("Enter check in date as dd-mm-yyyy from " + today);
+                        System.out.println("Enter check in date as dd-mm-yyyy FROM " + today);
                         String checkInDateString = scanner.nextLine();
                         Date checkInDate = formatter.parse(checkInDateString);
 
 
                         if (ReservationService.reservationService.isDateEarlier(checkInDate)) {
-                            System.out.println("Check in date cannot be in the past");
+                            System.out.println("Check in date cannot be in the past!");
                         } else {
 
                             long checkInMs = checkInDate.getTime();
-                            checkInMs += 1*24*60*60*1000;
+                            checkInMs += 1 * 24 * 60 * 60 * 1000;
                             Date oneDayLater = new Date(checkInMs);
 
-                            System.out.println("Enter check out date dd-MM-yyyy from "+ oneDayLater);
+                            System.out.println("Enter check out date dd-MM-yyyy FROM " + oneDayLater);
                             String checkOutDateString = scanner.nextLine();
                             Date checkOutDate = formatter.parse(checkOutDateString);
 
@@ -57,10 +59,10 @@ public class Tester {
                             if (availableRooms == null || availableRooms.isEmpty()) {
                                 System.out.println("There is no available room at the moment");
                                 List<Room> recommendedRooms = ReservationService.reservationService.recommendedRoomsForNextWeek(checkInDate, checkOutDate);
-                                if (recommendedRooms == null || recommendedRooms.isEmpty()){
+                                if (recommendedRooms == null || recommendedRooms.isEmpty()) {
                                     System.out.println("There is also no recommended room for the next week");
                                     System.out.println("Please try another date ");
-                                }else{
+                                } else {
                                     System.out.println("Recommended rooms for you as follows: ");
                                     System.out.println("=================================== ");
                                     for (Room room : recommendedRooms
@@ -71,18 +73,21 @@ public class Tester {
                                                 + " for " + numberOfDays + " days");
                                     }
                                     System.out.println("========================");
-                                    System.out.println("Would you like to book one of these for next week y/n");
+                                    System.out.println("Would you like to book one of these for next week?");
+                                    System.out.println("(y) for yes (n) for no");
                                     String choice = scanner.nextLine();
                                     if (choice.equals("y")) {
-                                        System.out.println("Do you have account with us y/n");
+                                        System.out.println("Do you have account with us?");
+                                        System.out.println("(y) for yes (n) for no");
                                         choice = scanner.nextLine();
                                         if (choice.equals("y")) {
-                                            System.out.println("enter email format name@domain.com");
+                                            System.out.println("enter email ex. name@domain.com");
                                             String email = scanner.nextLine();
                                             if (CustomerService.customerService.getCustomer(email) == null) {
                                                 System.out.println("You don't have account with this email address");
 
-                                                System.out.println("Do you want to make an account y/n?");
+                                                System.out.println("Do you want to make an account?");
+                                                System.out.println("(y) for yes (n) for no");
                                                 choice = scanner.nextLine();
 
                                                 if (choice.equals("y")) {
@@ -94,7 +99,7 @@ public class Tester {
                                                     email = scanner.nextLine();
                                                     CustomerService.customerService.addCustomer(email, firstName, lastName);
 
-                                                    System.out.println("enter the room number you would you like to reserve");
+                                                    System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                                     String roomNumber = scanner.nextLine();
 
                                                     ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), ReservationService.reservationService.getCheckIn7DaysLater(), ReservationService.reservationService.getCheckOut7DaysLater());
@@ -105,7 +110,7 @@ public class Tester {
                                                 }
 
                                             } else {
-                                                System.out.println("what room would you like to reserve");
+                                                System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                                 String roomNumber = scanner.nextLine();
 
                                                 ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), ReservationService.reservationService.getCheckIn7DaysLater(), ReservationService.reservationService.getCheckOut7DaysLater());
@@ -121,22 +126,14 @@ public class Tester {
                                             String email = scanner.nextLine();
                                             CustomerService.customerService.addCustomer(email, firstName, lastName);
 
-                                            System.out.println("enter the room number you would you like to reserve");
+                                            System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                             String roomNumber = scanner.nextLine();
                                             ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
                                         }
-                                    } else {
-                                        System.out.println("1- Find and reserve a room");
-                                        System.out.println("2- See my reservations");
-                                        System.out.println("3- Create an account");
-                                        System.out.println("4- Admin");
-                                        System.out.println("5- Exit");
-                                        System.out.println("=====================================");
-                                        System.out.println("please select a NUMBER from the menu");
                                     }
                                 }
                             } else {
-                                System.out.println("Available rooms for you as follows: ");
+                                System.out.println("Available rooms for you: ");
                                 System.out.println("=================================== ");
                                 for (Room room : availableRooms
                                 ) {
@@ -145,19 +142,22 @@ public class Tester {
                                             + room.getRoomPrice() * numberOfDays + " "
                                             + " for " + numberOfDays + " days");
                                 }
-
-                                System.out.println("Would you like to book one of these room y/n");
+                                System.out.println("========================================");
+                                System.out.println("Would you like to book one of these room?");
+                                System.out.println("(y) for yes (n) for no");
                                 String choice = scanner.nextLine();
                                 if (choice.equals("y")) {
-                                    System.out.println("Do you have account with us y/n");
+                                    System.out.println("Do you have an account with us?");
+                                    System.out.println("(y) for yes (n) for no");
                                     choice = scanner.nextLine();
                                     if (choice.equals("y")) {
                                         System.out.println("enter email format name@domain.com");
                                         String email = scanner.nextLine();
                                         if (CustomerService.customerService.getCustomer(email) == null) {
-                                            System.out.println("You don't have account with this email address");
+                                            System.out.println("You don't have an account with this email address");
 
-                                            System.out.println("Do you want to make an account y/n?");
+                                            System.out.println("Do you want to make an account?");
+                                            System.out.println("(y) for yes (n) for no");
                                             choice = scanner.nextLine();
 
                                             if (choice.equals("y")) {
@@ -169,7 +169,7 @@ public class Tester {
                                                 email = scanner.nextLine();
                                                 CustomerService.customerService.addCustomer(email, firstName, lastName);
 
-                                                System.out.println("enter the room number you would you like to reserve");
+                                                System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                                 String roomNumber = scanner.nextLine();
                                                 ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
 
@@ -179,7 +179,7 @@ public class Tester {
                                             }
 
                                         } else {
-                                            System.out.println("what room would you like to reserve");
+                                            System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                             String roomNumber = scanner.nextLine();
 
                                             ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
@@ -195,18 +195,12 @@ public class Tester {
                                         String email = scanner.nextLine();
                                         CustomerService.customerService.addCustomer(email, firstName, lastName);
 
-                                        System.out.println("enter the room number you would you like to reserve");
+                                        System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                         String roomNumber = scanner.nextLine();
                                         ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
                                     }
                                 } else {
-                                    System.out.println("1- Find and reserve a room");
-                                    System.out.println("2- See my reservations");
-                                    System.out.println("3- Create an account");
-                                    System.out.println("4- Admin");
-                                    System.out.println("5- Exit");
-                                    System.out.println("=====================================");
-                                    System.out.println("please select a NUMBER from the menu");
+                                    MainMenu.mainMenu.showMenu();
                                 }
                             }
                         }
@@ -219,9 +213,10 @@ public class Tester {
                         List<Reservation> customerReservations = (List<Reservation>) ReservationService.reservationService.getCustomersReservation(email);
 
                         if (customerReservations == null || customerReservations.isEmpty()) {
-                            System.out.println("You haven't got any reservations please make a reservation from the menu");
+                            System.out.println("You haven't got any reservations.");
+                            System.out.println("please make a reservation from the menu.");
                             System.out.println("---------------------------");
-                        }else {
+                        } else {
                             for (Reservation reservation : customerReservations
                             ) {
                                 System.out.println("Room number: " + reservation.getRoom().getRoomNumber() + " from " + reservation.getCheckInDate() + " to " + reservation.getCheckOutDate());
@@ -238,13 +233,7 @@ public class Tester {
                         CustomerService.customerService.addCustomer(email, firstName, lastName);
 
                     } else if (selection == 4) {
-                        System.out.println("1-See all Customers");
-                        System.out.println("2-See all Rooms");
-                        System.out.println("3-See all Reservations");
-                        System.out.println("4-Add a Room");
-                        System.out.println("5-Back to Main Menu");
-                        System.out.println("=====================================");
-                        System.out.println("please select a NUMBER from the menu");
+                        AdminMenu.adminMenu.showAdminMenu();
                         selection = Integer.parseInt(scanner.nextLine());
 
                         if (selection == 1) {

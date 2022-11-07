@@ -69,6 +69,9 @@ public class Reservation {
         if (newCheckOutDate.after(this.checkInDate) && newCheckOutDate.before(this.checkOutDate)) {
             return true;
         }
+        if(this.checkInDate.after(newCheckInDate)&&this.checkOutDate.before(newCheckOutDate)){
+            return true;
+        }
         return false;
     }
 

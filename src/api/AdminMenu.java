@@ -1,29 +1,16 @@
 package api;
 
 public class AdminMenu {
-    private String option1 = "See all Customers";
-    private String option2 = "See all Rooms";
-    private String option3 = "See all Reservations";
-    private String option4 = "Add a Room";
-    private String option5 = "Back to Main Menu";
 
-    public String getOption1() {
-        return option1;
-    }
+    public static AdminMenu adminMenu = new AdminMenu();
 
-    public String getOption2() {
-        return option2;
-    }
-
-    public String getOption3() {
-        return option3;
-    }
-
-    public String getOption4() {
-        return option4;
-    }
-
-    public String getOption5() {
-        return option5;
+    public void showAdminMenu (){
+        System.out.println("1-See all Customers");
+        System.out.println("2-See all Rooms");
+        System.out.println("3-See all Reservations");
+        System.out.println("4-Add a Room");
+        System.out.println("5-Back to Main Menu");
+        System.out.println("=====================================");
+        System.out.println("please select a NUMBER from the menu");
     }
 }
