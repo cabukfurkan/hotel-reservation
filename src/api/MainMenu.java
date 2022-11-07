@@ -6,6 +6,8 @@ public class MainMenu {
 
 
     public void showMenu(){
+        System.out.println("***** MAIN MENU *****");
+        System.out.println("==========================");
         System.out.println("1- Find and reserve a room");
         System.out.println("2- See my reservations");
         System.out.println("3- Create an account");
