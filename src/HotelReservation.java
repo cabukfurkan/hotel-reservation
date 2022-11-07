@@ -54,6 +54,11 @@ public class HotelReservation {
                                 long timeDifference = checkOutDate.getTime() - checkInDate.getTime();
                                 long numberOfDays = TimeUnit.MILLISECONDS.toDays(timeDifference);
 
+                                if (ReservationService.reservationService.isCheckoutDateCollides(checkInDate,checkOutDate)){
+                                    System.out.println("Checkout date cannot be equal to or before than checkin date");
+                                    break;
+                                }
+
                                 List<Room> availableRooms = ReservationService.reservationService.findAvailableRooms(checkInDate, checkOutDate);
 
                                 if (availableRooms == null || availableRooms.isEmpty()) {
@@ -127,7 +132,8 @@ public class HotelReservation {
 
                                                 System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                                 String roomNumber = scanner.nextLine();
-                                                ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+//Burayaaaaaaaaaaa bak
+                                                ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), ReservationService.reservationService.getCheckIn7DaysLater(), ReservationService.reservationService.getCheckOut7DaysLater());
                                             }
                                         }
                                     }

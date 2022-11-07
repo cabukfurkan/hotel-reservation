@@ -70,6 +70,13 @@ public class ReservationService {
         return false;
     }
 
+    public  boolean isCheckoutDateCollides (Date checkInDate, Date checkOutDate){
+        if (checkOutDate.before(checkInDate)|| checkOutDate.equals(checkInDate)){
+            return true;
+        }
+        return false;
+    }
+
     public Reservation reserveARoom(Customer customer, Room room, Date checkInDate, Date checkOutDate) {
 
         Reservation reservation = new Reservation(customer, room, checkInDate, checkOutDate);
