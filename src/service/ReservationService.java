@@ -1,22 +1,22 @@
 package service;
 
 import api.AdminResource;
-import model.Customer;
-import model.IRoom;
-import model.Reservation;
-import model.Room;
+import model.*;
 import org.w3c.dom.ls.LSOutput;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ReservationService {
     public static ReservationService reservationService = new ReservationService();
     Collection<Room> rooms = new ArrayList<>();
+    // initializing rooms
 
     Map<String, List<Reservation>> roomReservations = new HashMap<>();
 
     public void addRoom(Room room) {
-
         int count = 0;
 
         for (Room existedRoom : rooms
@@ -49,9 +49,32 @@ public class ReservationService {
     }
 
 
+    public boolean isDateEarlier(Date checkInDate){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(checkInDate);
+        calendar.set(Calendar.HOUR_OF_DAY,23);
+        calendar.set(Calendar.MINUTE,59);
+        calendar.set(Calendar.SECOND,59);
+        calendar.set(Calendar.MILLISECOND,9999);
+        Date checkInDateWHours = calendar.getTime();
+        Date currentTime = new Date();
+        if (currentTime.after(checkInDateWHours)){
+            return true;
+        }
+        return false;
+    }
+
     public Reservation reserveARoom(Customer customer, Room room, Date checkInDate, Date checkOutDate) {
+
         Reservation reservation = new Reservation(customer, room, checkInDate, checkOutDate);
+
         List<Reservation> reservationList = roomReservations.get(room.getRoomNumber());
+
+        if (rooms.isEmpty()){
+            System.out.println("There is no room at the moment");
+            System.out.println("Try when admin adds a room");
+            return reservation;
+        }
 
         if (reservationList == null) {
             List<Reservation> newReservationList = new ArrayList<>();
@@ -68,6 +91,7 @@ public class ReservationService {
                 System.out.println("This reservation is not possible");
 
                 System.out.println("Available rooms for you as follows: ");
+                System.out.println("=================================== ");
                 Collection<Room> availableRooms = findAvailableRooms(checkInDate, checkOutDate);
                 int counter = 1;
                 for (Room availableRoom : availableRooms
@@ -94,6 +118,7 @@ public class ReservationService {
     }
 
     public List<Room> findAvailableRooms(Date checkInDate, Date checkOutDate) {
+
         List<Room> availableRoomList = new ArrayList<>();
         List<Room> allRooms = (List<Room>) AdminResource.adminResource.getAllRooms();
 
