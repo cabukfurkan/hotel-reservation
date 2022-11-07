@@ -158,14 +158,14 @@ public class ReservationService {
         return availableRoomList;
     }
 
-    public Date add7days(Date date){
+     Date add7days(Date date){
         long dateInMs = date.getTime();
         dateInMs += 7*24*60*60*1000;
         Date sevenDaysLater = new Date(dateInMs);
 
         return sevenDaysLater;
     }
-    public Date add1day(Date date){
+   public Date add1day(Date date){
         long dateInMs = date.getTime();
         dateInMs += 1*24*60*60*1000;
         Date oneDayLater = new Date(dateInMs);
@@ -177,10 +177,9 @@ public class ReservationService {
         this.checkIn7DaysLater = checkInPlus7Days;
         Date checkOutPlus7Days = add7days(checkOutDate);
         this.checkOut7DaysLater = checkOutPlus7Days;
+
+
         List<Room> recommendedRoomList = findAvailableRooms(checkInPlus7Days,checkOutPlus7Days);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
         System.out.println("Recommended rooms from " + checkInPlus7Days +" to "+ checkOutPlus7Days);
 
         return recommendedRoomList;

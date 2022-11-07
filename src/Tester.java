@@ -108,7 +108,7 @@ public class Tester {
                                                 System.out.println("what room would you like to reserve");
                                                 String roomNumber = scanner.nextLine();
 
-                                                ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), checkInDate, checkOutDate);
+                                                ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), ReservationService.reservationService.getCheckIn7DaysLater(), ReservationService.reservationService.getCheckOut7DaysLater());
                                             }
 
                                         } else {
