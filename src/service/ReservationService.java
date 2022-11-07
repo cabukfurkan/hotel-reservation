@@ -55,16 +55,16 @@ public class ReservationService {
     }
 
 
-    public boolean isDateEarlier(Date checkInDate){
+    public boolean isDateEarlier(Date checkInDate) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(checkInDate);
-        calendar.set(Calendar.HOUR_OF_DAY,23);
-        calendar.set(Calendar.MINUTE,59);
-        calendar.set(Calendar.SECOND,59);
-        calendar.set(Calendar.MILLISECOND,9999);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 9999);
         Date checkInDateWHours = calendar.getTime();
         Date currentTime = new Date();
-        if (currentTime.after(checkInDateWHours)){
+        if (currentTime.after(checkInDateWHours)) {
             return true;
         }
         return false;
@@ -76,7 +76,7 @@ public class ReservationService {
 
         List<Reservation> reservationList = roomReservations.get(room.getRoomNumber());
 
-        if (rooms.isEmpty()){
+        if (rooms.isEmpty()) {
             System.out.println("Hotel has no room at the moment please wait for admin");
             return reservation;
         }
@@ -158,33 +158,35 @@ public class ReservationService {
         return availableRoomList;
     }
 
-     Date add7days(Date date){
+    Date add7days(Date date) {
         long dateInMs = date.getTime();
-        dateInMs += 7*24*60*60*1000;
+        dateInMs += 7 * 24 * 60 * 60 * 1000;
         Date sevenDaysLater = new Date(dateInMs);
 
         return sevenDaysLater;
     }
-   public Date add1day(Date date){
+
+    public Date add1day(Date date) {
         long dateInMs = date.getTime();
-        dateInMs += 1*24*60*60*1000;
+        dateInMs += 1 * 24 * 60 * 60 * 1000;
         Date oneDayLater = new Date(dateInMs);
 
         return oneDayLater;
     }
-    public List<Room> recommendedRoomsForNextWeek(Date checkInDate, Date checkOutDate){
+
+    public List<Room> recommendedRoomsForNextWeek(Date checkInDate, Date checkOutDate) {
         Date checkInPlus7Days = add7days(checkInDate);
+        String checkInPlus7DaysStr = convertDate(checkInPlus7Days.toString());
         this.checkIn7DaysLater = checkInPlus7Days;
         Date checkOutPlus7Days = add7days(checkOutDate);
+        String checkOutPlus7DaysStr = convertDate(checkOutPlus7Days.toString());
         this.checkOut7DaysLater = checkOutPlus7Days;
 
-
-        List<Room> recommendedRoomList = findAvailableRooms(checkInPlus7Days,checkOutPlus7Days);
-        System.out.println("Recommended rooms from " + checkInPlus7Days +" to "+ checkOutPlus7Days);
+        List<Room> recommendedRoomList = findAvailableRooms(checkInPlus7Days, checkOutPlus7Days);
+        System.out.println("Recommended rooms from " + checkInPlus7DaysStr + " to " + checkOutPlus7DaysStr);
 
         return recommendedRoomList;
     }
-
 
 
     public Collection<Reservation> getCustomersReservation(String customerEmail) {
@@ -206,13 +208,64 @@ public class ReservationService {
             List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
             for (Reservation reservation : reservationsPerRoom
             ) {
-                System.out.println("Customer email: " + reservation.getCustomer().getEmail()
-                        + "Customer name: " + reservation.getCustomer().getFirstName()
-                        + "Customer last name: " + reservation.getCustomer().getLastName()
-                        + "room number: " + reservation.getRoom()
-                        + "Check in date: " + reservation.getCheckInDate()
-                        + "Check out date: " + reservation.getCheckOutDate());
+                System.out.println("email: " + reservation.getCustomer().getEmail()+" "
+                        + "name: " + reservation.getCustomer().getFirstName()+" "
+                        + "last name: " + reservation.getCustomer().getLastName()+" "
+                        + "room number: " + reservation.getRoom()+" "
+                        + "Checkin date: " + convertDate(reservation.getCheckInDate().toString())+"-"
+                        + "Checkout date: " + convertDate(reservation.getCheckOutDate().toString()));
             }
         }
+    }
+
+    public String convertDate(String dateToBeConverted) {
+        String day = dateToBeConverted.substring(8, 10);
+        String year = dateToBeConverted.substring(24);
+        String month = dateToBeConverted.substring(4, 7);
+        switch (month) {
+
+            case "Jan":
+                month = "01";
+                break;
+            case "Feb":
+                month = "02";
+                break;
+            case "Mar":
+                month = "03";
+                break;
+            case "Apr":
+                month = "04";
+                break;
+            case "May":
+                month = "05";
+                break;
+            case "Jun":
+                month = "06";
+                break;
+            case "Jul":
+                month = "07";
+                break;
+            case "Aug":
+                month = "08";
+                break;
+            case "Sep":
+                month = "09";
+                break;
+            case "Oct":
+                month = "10";
+                break;
+            case "Nov":
+                month = "11";
+                break;
+            case "Dec":
+                month = "12";
+                break;
+            default:
+                System.out.println("Not a month");
+        }
+        ;
+
+        String convertedDate = day + "-" + month + "-" + year;
+        return convertedDate;
     }
 }

@@ -14,11 +14,9 @@ import java.util.concurrent.TimeUnit;
 public class HotelReservation {
 
     public static void main(String[] args) {
-
+        System.out.println("Initializing hotel rooms...");
         Room room1 = new Room("1", 40.0, RoomType.SINGLE);
-        Room room2 = new Room("2", 100.0, RoomType.DOUBLE);
         ReservationService.reservationService.addRoom(room1);
-        ReservationService.reservationService.addRoom(room2);
         System.out.println("==============================");
 
         boolean keepRunning = true;
@@ -43,12 +41,13 @@ public class HotelReservation {
                             if (ReservationService.reservationService.isDateEarlier(checkInDate)) {
                                 System.out.println("Check in date cannot be in the past!");
                             } else {
-
                                 long checkInMs = checkInDate.getTime();
                                 checkInMs += 24 * 60 * 60 * 1000;
                                 Date oneDayLater = new Date(checkInMs);
+                                String oneDayLaterStr = oneDayLater.toString();
+                                oneDayLaterStr = ReservationService.reservationService.convertDate(oneDayLaterStr);
 
-                                System.out.println("Enter check out date dd-MM-yyyy FROM " + oneDayLater);
+                                System.out.println("Enter check out date dd-MM-yyyy FROM " + oneDayLaterStr);
                                 String checkOutDateString = scanner.nextLine();
                                 Date checkOutDate = formatter.parse(checkOutDateString);
 
@@ -64,7 +63,6 @@ public class HotelReservation {
                                         System.out.println("There is also no recommended room for the next week");
                                         System.out.println("Please try another date ");
                                     } else {
-                                        System.out.println("Recommended rooms for you as follows: ");
                                         System.out.println("=================================== ");
                                         for (Room room : recommendedRooms
                                         ) {
@@ -219,7 +217,7 @@ public class HotelReservation {
                             } else {
                                 for (Reservation reservation : customerReservations
                                 ) {
-                                    System.out.println("Room number: " + reservation.getRoom().getRoomNumber() + " from " + reservation.getCheckInDate() + " to " + reservation.getCheckOutDate());
+                                    System.out.println("Room number: " + reservation.getRoom().getRoomNumber() + " from " + ReservationService.reservationService.convertDate(reservation.getCheckInDate().toString())  + " to " + ReservationService.reservationService.convertDate(reservation.getCheckOutDate().toString()));
                                 }
                             }
 
