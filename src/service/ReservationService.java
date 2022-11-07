@@ -2,19 +2,25 @@ package service;
 
 import api.AdminResource;
 import model.*;
-import org.w3c.dom.ls.LSOutput;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ReservationService {
     public static ReservationService reservationService = new ReservationService();
     Collection<Room> rooms = new ArrayList<>();
-    // initializing rooms
-
     Map<String, List<Reservation>> roomReservations = new HashMap<>();
+
+    private Date checkIn7DaysLater;
+    private Date checkOut7DaysLater;
+
+    public Date getCheckIn7DaysLater() {
+        return checkIn7DaysLater;
+    }
+
+    public Date getCheckOut7DaysLater() {
+        return checkOut7DaysLater;
+    }
 
     public void addRoom(Room room) {
         int count = 0;
@@ -71,8 +77,7 @@ public class ReservationService {
         List<Reservation> reservationList = roomReservations.get(room.getRoomNumber());
 
         if (rooms.isEmpty()){
-            System.out.println("There is no room at the moment");
-            System.out.println("Try when admin adds a room");
+            System.out.println("Hotel has no room at the moment please wait for admin");
             return reservation;
         }
 
@@ -131,7 +136,7 @@ public class ReservationService {
                 List<Reservation> reservationsPerRoom = roomReservationsEntry.getValue();
                 // for each entry (reservation list per room) checkin dates is not within the range of an existing reservation
 
-                if (roomReservationsEntry.getKey() == room.getRoomNumber()) {
+                if (Objects.equals(roomReservationsEntry.getKey(), room.getRoomNumber())) {
                     isRoomEverReserved = true;
                     int collision = 0;
                     for (Reservation reservation : reservationsPerRoom
@@ -152,6 +157,36 @@ public class ReservationService {
         }
         return availableRoomList;
     }
+
+    public Date add7days(Date date){
+        long dateInMs = date.getTime();
+        dateInMs += 7*24*60*60*1000;
+        Date sevenDaysLater = new Date(dateInMs);
+
+        return sevenDaysLater;
+    }
+    public Date add1day(Date date){
+        long dateInMs = date.getTime();
+        dateInMs += 1*24*60*60*1000;
+        Date oneDayLater = new Date(dateInMs);
+
+        return oneDayLater;
+    }
+    public List<Room> recommendedRoomsForNextWeek(Date checkInDate, Date checkOutDate){
+        Date checkInPlus7Days = add7days(checkInDate);
+        this.checkIn7DaysLater = checkInPlus7Days;
+        Date checkOutPlus7Days = add7days(checkOutDate);
+        this.checkOut7DaysLater = checkOutPlus7Days;
+        List<Room> recommendedRoomList = findAvailableRooms(checkInPlus7Days,checkOutPlus7Days);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+        System.out.println("Recommended rooms from " + checkInPlus7Days +" to "+ checkOutPlus7Days);
+
+        return recommendedRoomList;
+    }
+
+
 
     public Collection<Reservation> getCustomersReservation(String customerEmail) {
         List<Reservation> reservationsForCustomer = new ArrayList<>();
