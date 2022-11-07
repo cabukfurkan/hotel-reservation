@@ -121,7 +121,6 @@ public class HotelReservation {
                                                 }
 
                                             } else {
-//                                make an account
                                                 System.out.println("name: ");
                                                 String firstName = scanner.nextLine();
                                                 System.out.println("lastname: ");
@@ -132,7 +131,6 @@ public class HotelReservation {
 
                                                 System.out.println("enter the ROOM NUMBER you would you like to reserve");
                                                 String roomNumber = scanner.nextLine();
-//Burayaaaaaaaaaaa bak
                                                 ReservationService.reservationService.reserveARoom(CustomerService.customerService.getCustomer(email), ReservationService.reservationService.getARoom(roomNumber), ReservationService.reservationService.getCheckIn7DaysLater(), ReservationService.reservationService.getCheckOut7DaysLater());
                                             }
                                         }
