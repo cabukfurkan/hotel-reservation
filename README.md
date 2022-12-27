@@ -1,6 +1,5 @@
 # Hotel Reservation
 
----
 
 ## How does application works?
 
@@ -68,4 +67,3 @@ The application will have customer accounts. Each account has:
 - Execptions
 - RegEx
 
----
